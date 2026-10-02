@@ -1,7 +1,7 @@
 name: reports-web-node-01
 services:
   engine:
-    image: ghcr.io/reportsweb/engine:1.0.1
+    image: ghcr.io/reportsweb/engine:1.0.0
     healthcheck:
       test:
       - CMD
@@ -39,7 +39,7 @@ services:
       timeout: 2s
       retries: 30
   runtime:
-    image: ghcr.io/reportsweb/engine:1.0.1
+    image: ghcr.io/reportsweb/engine:1.0.0
     user: root
     command:
     - export-runtime
