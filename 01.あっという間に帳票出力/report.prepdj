@@ -1,0 +1,1 @@
+{"Version":"13.0.0","Title":"あっという間に帳票出力","CoordinateUnit":"mm","Paper":6,"CustomWidthMm":120,"CustomHeightMm":60,"Objects":[{"Name":"Message","Kind":0,"X":10,"Y":12,"Width":100,"Height":12,"Text":"ここを書き換えられます","FontFamily":"Noto Sans CJK JP","FontSizePt":14,"Visible":true}]}

@@ -1,0 +1,23 @@
+{
+  "name": "@pao/reports-web-node-sample",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node --max-old-space-size=256 dist/server.js",
+    "test": "npm run build && node --test dist/test/*.test.js"
+  },
+  "dependencies": {
+    "@pao-at-office/reports-web": "^1.0.0",
+    "pg": "8.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.0",
+    "@types/pg": "8.15.5",
+    "typescript": "5.9.2"
+  }
+}

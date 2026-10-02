@@ -1,0 +1,90 @@
+﻿[
+    {
+        "Source":  "C:\\Program Files (x86)\\Pao@Office\\Reports.net\\Sample\\01.簡単なサンプル－あっという間に帳票出力\\レポート定義ファイル.prepd",
+        "Output":  "C:\\Pao\\Pao.Reports.Web\\samples\\php\\resources\\definitions\\quick-start.prepdj",
+        "Objects":  8,
+        "CoordinateUnit":  "mm",
+        "Sha256":  "ad5b755e65399638d100ff704372cf1559394a21684081a29910a1d8cbbc595e",
+        "Result":  "PASS"
+    },
+    {
+        "Source":  "C:\\Program Files (x86)\\Pao@Office\\Reports.net\\Sample\\03.帳票WEBアプリケーション－各種クラウド公開動作中\\CS\\PaoWebApp\\App_Data\\sample10.prepd",
+        "Output":  "C:\\Pao\\Pao.Reports.Web\\samples\\php\\resources\\definitions\\multiples-of-ten.prepdj",
+        "Objects":  8,
+        "CoordinateUnit":  "mm",
+        "Sha256":  "c26450451bb1a7ca2413cca7d4e187cc1b8b6a522e763f561a2371c3d57eecdb",
+        "Result":  "PASS"
+    },
+    {
+        "Source":  "C:\\Program Files (x86)\\Pao@Office\\Reports.net\\Sample\\03.帳票WEBアプリケーション－各種クラウド公開動作中\\CS\\PaoWebApp\\App_Data\\zipcode1.prepd",
+        "Output":  "C:\\Pao\\Pao.Reports.Web\\samples\\php\\resources\\definitions\\postal-1.prepdj",
+        "Objects":  16,
+        "CoordinateUnit":  "mm",
+        "Sha256":  "25e5d102d2f0845ad6c08cc1eddef556eef4ce930dfa70a8d8c00c9fef104b63",
+        "Result":  "PASS"
+    },
+    {
+        "Source":  "C:\\Program Files (x86)\\Pao@Office\\Reports.net\\Sample\\03.帳票WEBアプリケーション－各種クラウド公開動作中\\CS\\PaoWebApp\\App_Data\\zipcode2.prepd",
+        "Output":  "C:\\Pao\\Pao.Reports.Web\\samples\\php\\resources\\definitions\\postal-2.prepdj",
+        "Objects":  12,
+        "CoordinateUnit":  "mm",
+        "Sha256":  "4a5db130f4547091546ad8db6d914240aa5450d58489044e8f784f05c88987a4",
+        "Result":  "PASS"
+    },
+    {
+        "Source":  "C:\\Program Files (x86)\\Pao@Office\\Reports.net\\Sample\\03.帳票WEBアプリケーション－各種クラウド公開動作中\\CS\\PaoWebApp\\App_Data\\mitsumori.head.prepd",
+        "Output":  "C:\\Pao\\Pao.Reports.Web\\samples\\php\\resources\\definitions\\estimate-cover.prepdj",
+        "Objects":  7,
+        "CoordinateUnit":  "mm",
+        "Sha256":  "fcf3229e3fa6afa66463ae45a5c40d1c2ed70688bed1e142e627c1f2215d8c60",
+        "Result":  "PASS"
+    },
+    {
+        "Source":  "C:\\Program Files (x86)\\Pao@Office\\Reports.net\\Sample\\03.帳票WEBアプリケーション－各種クラウド公開動作中\\CS\\PaoWebApp\\App_Data\\mitsumori.prepd",
+        "Output":  "C:\\Pao\\Pao.Reports.Web\\samples\\php\\resources\\definitions\\estimate.prepdj",
+        "Objects":  53,
+        "CoordinateUnit":  "mm",
+        "Sha256":  "e63621d660990f1dd89b64c6f63e20f52f305fbf28c2d7ffb527e1355d507262",
+        "Result":  "PASS"
+    },
+    {
+        "Source":  "C:\\Program Files (x86)\\Pao@Office\\Reports.net\\Sample\\03.帳票WEBアプリケーション－各種クラウド公開動作中\\CS\\PaoWebApp\\App_Data\\invoice.prepd",
+        "Output":  "C:\\Pao\\Pao.Reports.Web\\samples\\php\\resources\\definitions\\invoice.prepdj",
+        "Objects":  22,
+        "CoordinateUnit":  "mm",
+        "Sha256":  "879962fb720f8d40f938a46663f4153782b0095cdfa4a62a2d4d1037030c18a5",
+        "Result":  "PASS"
+    },
+    {
+        "Source":  "C:\\Program Files (x86)\\Pao@Office\\Reports.net\\Sample\\03.帳票WEBアプリケーション－各種クラウド公開動作中\\CS\\PaoWebApp\\App_Data\\itemlist.prepd",
+        "Output":  "C:\\Pao\\Pao.Reports.Web\\samples\\php\\resources\\definitions\\products.prepdj",
+        "Objects":  16,
+        "CoordinateUnit":  "mm",
+        "Sha256":  "6e1e479903ed31bee455891182e9b37f97e432857688479d9164799a528ecd13",
+        "Result":  "PASS"
+    },
+    {
+        "Source":  "C:\\Program Files (x86)\\Pao@Office\\Reports.net\\Sample\\03.帳票WEBアプリケーション－各種クラウド公開動作中\\CS\\PaoWebApp\\App_Data\\koukoku.prepd",
+        "Output":  "C:\\Pao\\Pao.Reports.Web\\samples\\php\\resources\\definitions\\advertising.prepdj",
+        "Objects":  20,
+        "CoordinateUnit":  "mm",
+        "Sha256":  "da292c488d5adf26af99f47c94735c434f2a97c272d26dbb4d6597e5f3438bff",
+        "Result":  "PASS"
+    },
+    {
+        "Source":  "C:\\Program Files (x86)\\Pao@Office\\Reports.net\\Sample\\03.帳票WEBアプリケーション－各種クラウド公開動作中\\CS\\PaoWebApp\\App_Data\\meishi.prepd",
+        "Output":  "C:\\Pao\\Pao.Reports.Web\\samples\\php\\resources\\definitions\\business-card.prepdj",
+        "Objects":  26,
+        "CoordinateUnit":  "mm",
+        "Sha256":  "4ec304e30725fded5bb2cda7944233a6834a956fea3e5566a9bb8badc628c608",
+        "Result":  "PASS"
+    },
+    {
+        "Source":  "C:\\Program Files (x86)\\Pao@Office\\Reports.net\\Sample\\03.帳票WEBアプリケーション－各種クラウド公開動作中\\CS\\PaoWebApp\\App_Data\\simple.prepd",
+        "Output":  "C:\\Pao\\Pao.Reports.Web\\samples\\php\\resources\\definitions\\design-showcase.prepdj",
+        "Objects":  17,
+        "CoordinateUnit":  "mm",
+        "Sha256":  "0088edf1f76b503e96ce3f764c4cdce32b11e147f9bd82cc4c7b4e1956055d5c",
+        "Result":  "PASS"
+    }
+]

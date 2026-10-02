@@ -1,0 +1,51 @@
+name: reports-web-node-01
+services:
+  engine:
+    image: ghcr.io/reportsweb/engine:1.0.0
+    healthcheck:
+      test:
+      - CMD
+      - node
+      - -e
+      - fetch('http://127.0.0.1:3107/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+      interval: 2s
+      timeout: 3s
+      retries: 40
+  quick-start:
+    build: .
+    environment:
+      REPORTS_ENGINE_URL: http://engine:3107
+    ports:
+    - 127.0.0.1:${SAMPLE_PORT:-19220}:8080
+    volumes:
+    - type: volume
+      source: reports-web-runtime
+      target: /app/reports.web
+      read_only: true
+    depends_on:
+      engine:
+        condition: service_healthy
+      runtime:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - -q
+      - -O
+      - /dev/null
+      - http://127.0.0.1:8080/print-data
+      interval: 1s
+      timeout: 2s
+      retries: 30
+  runtime:
+    image: ghcr.io/reportsweb/engine:1.0.0
+    user: root
+    command:
+    - export-runtime
+    volumes:
+    - type: volume
+      source: reports-web-runtime
+      target: /export
+volumes:
+  reports-web-runtime: {}

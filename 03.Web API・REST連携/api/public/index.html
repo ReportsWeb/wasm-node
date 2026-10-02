@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reports Web — TypeScript / Node.js帳票サンプル</title>
+  <style>
+    :root{font-family:"Yu Gothic UI","Meiryo",sans-serif;color:#eaf1fb;background:#dce2ea}*{box-sizing:border-box}body{margin:0}
+    .shell{display:grid;grid-template-rows:auto minmax(360px,1fr);height:100vh;height:100dvh;min-height:520px}.head{background:linear-gradient(110deg,#142841,#1c3d62);box-shadow:0 2px 8px #0d1b2f30;z-index:2}
+    .top{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:1px solid #ffffff16}.identity{display:flex;align-items:center;gap:10px;flex-shrink:0}.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,#71cbff,#367ce6);color:white;font-size:20px}.brand{display:grid;gap:2px}.brand strong{font-size:17px;letter-spacing:.02em}.brand small{color:#b9cde2;font-size:11px}
+    .status{margin-right:auto;color:#c3d7e9;font-size:12px;min-width:0;overflow-wrap:anywhere}.status[data-sample]{color:#9de8c1}.status[data-sample]:before{content:"●";font-size:9px;margin-right:6px}.utilities{display:flex;align-items:center;gap:18px;flex-shrink:0}.data-actions{display:flex;gap:6px}.designer-action{border-left:1px solid #ffffff26;padding-left:18px}
+    .action{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:8px 12px;border:1px solid #ffffff30;border-radius:8px;background:#ffffff0a;color:#edf5ff;font:inherit;font-size:13px;font-weight:600;white-space:nowrap;flex-shrink:0;text-decoration:none;cursor:pointer;transition:background .15s}.action svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.action:hover{background:#ffffff1c}.action:disabled,.action[aria-disabled="true"]{opacity:.45;cursor:default}.action[aria-disabled="true"]{pointer-events:none}.action.quiet{border-color:transparent;background:transparent;color:#c6dbef}.action.quiet:hover{background:#ffffff12}.action.primary{background:#3d8bf0;border-color:#66a7fc;color:#fff;min-width:112px}.action.primary:hover{background:#5199f5}
+    :is(button,a,select,input):focus-visible{outline:3px solid #96d9ff;outline-offset:3px}.workspace-actions{display:grid;grid-template-columns:minmax(240px,1fr) minmax(490px,1.65fr);gap:30px;padding:14px 24px 16px;align-items:start}.group{min-width:0}.group-heading{display:flex;align-items:baseline;gap:12px;margin-bottom:7px}.group-heading label,.group-heading strong{font-size:12px;font-weight:600;color:#d3e3f3;white-space:nowrap}.hint{font-size:11px;color:#a8c1d9;line-height:1.4}
+    select{height:40px;max-width:100%;min-width:0;border:1px solid #56718f;border-radius:8px;padding:0 32px 0 11px;background:#10263f;color:#fff;font:inherit;font-size:14px}.picker select{width:100%}.pdf-group{padding-left:30px;border-left:1px solid #ffffff20}.pdf-controls{display:grid;grid-template-columns:minmax(210px,1fr) auto auto;gap:10px;align-items:center}.pdf-controls select{width:100%;font-size:13px}.download-option{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-size:12px;cursor:pointer}.download-option input{margin:0;width:16px;height:16px;accent-color:#67afff}
+    .viewer{border:0;display:block;width:100%;height:100%;min-height:0;background:#dce2ea}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.drop-active:after{content:"印刷データをここへドロップ";position:fixed;inset:12px;z-index:20;display:grid;place-items:center;border:3px dashed #70c6ff;border-radius:18px;background:#10213dee;color:#fff;font-size:1.2rem;font-weight:700;pointer-events:none}
+    @media(min-width:1500px){.workspace-actions{grid-template-columns:minmax(320px,520px) minmax(490px,720px);justify-content:space-between}}
+    @media(max-width:880px){.workspace-actions{grid-template-columns:1fr;gap:14px}.pdf-group{padding:0;border:0}.top{flex-wrap:wrap;gap:10px}.utilities{width:100%;justify-content:space-between}.status{margin-left:auto;margin-right:0;flex:1;text-align:right}}
+    @media(max-width:520px){.top{padding:10px 14px}.workspace-actions{padding:12px 14px;gap:12px}.brand small{font-size:10px}.utilities{gap:6px}.designer-action{padding-left:4px;border:0}.action{font-size:12px;padding:8px;gap:5px}.designer-action .action{font-size:11px;padding-left:4px;padding-right:0}.designer-action svg{display:none}.data-actions{gap:4px}.group-heading{gap:8px}.hint{font-size:10px}.pdf-controls{grid-template-columns:1fr auto;gap:8px}.pdf-controls select{grid-column:1/-1}.pdf-controls .primary{justify-self:start;min-width:140px}.download-option{justify-self:end}.shell{min-height:740px}}
+    @media(max-width:520px){.utilities{display:grid;grid-template-columns:1fr}.data-actions{justify-content:space-between}.data-actions .action{flex:1}.designer-action{justify-self:end}.status{font-size:11px}}
+    .runtime-badge{display:inline-flex;max-width:100%;padding:7px 12px;border:1px solid #fde68a;border-radius:6px;background:#fbbf24;color:#172033;font-size:14px;font-weight:800;line-height:1.35;white-space:normal}.brand small.runtime-badge{color:#172033;font-size:14px}
+  </style>
+</head>
+<body><div class="shell">
+  <header class="head">
+    <div class="top">
+      <div class="identity"><span class="mark" aria-hidden="true">R</span><span class="brand"><strong>Reports Web</strong><small class="runtime-badge">TypeScript / Node.js</small></span></div>
+      <span id="status" class="status" role="status" aria-live="polite">準備中…</span>
+      <nav class="utilities" aria-label="印刷データと補助操作">
+        <div class="data-actions">
+          <button id="openData" class="action" title="印刷データ（.prepej）を読み込む"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V5h6l2 2h10l-3 12H3zM3 10h16"/></svg><span>印刷データを開く</span></button>
+          <button id="saveData" class="action" title="表示中の印刷データを.prepejファイルに保存" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg><span>印刷データを保存</span></button>
+        </div>
+        <div class="designer-action"><a id="designer" class="action quiet" target="_blank" rel="noopener" title="このサンプルの帳票定義を別タブで編集"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.2-1 10.7-10.7a2.1 2.1 0 0 0-3-3L5.2 16zM14.5 6.7l3 3"/></svg><span>デザイナーで開く</span></a></div>
+      </nav>
+    </div>
+    <div class="workspace-actions">
+      <section class="group picker" aria-label="帳票選択">
+        <div class="group-heading"><label for="sample">サンプル帳票</label><span class="hint">選ぶと下に表示されます</span></div>
+        <select id="sample">{{SAMPLES}}</select>
+      </section>
+      <section class="group pdf-group" aria-labelledby="pdfHeading">
+        <div class="group-heading"><strong id="pdfHeading">PDFの生成</strong><span id="pdfHint" class="hint">別タブで表示します</span></div>
+        <div class="pdf-controls">
+          <label class="sr-only" for="pdfLocation">PDFの生成場所</label>
+          <select id="pdfLocation"><option value="browser">ブラウザ（フロントエンド）</option><option value="server">サーバー（バックエンド）</option></select>
+          <button id="pdf" class="action primary" aria-describedby="pdfHint" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l4 4v16H6zM14 2v5h5M9 12h6M9 16h6"/></svg><span>PDFを生成</span></button>
+          <label class="download-option" title="PDFを別タブに表示せずファイルとして保存"><input id="downloadPdf" type="checkbox">ダウンロード</label>
+        </div>
+      </section>
+    </div>
+    <input id="dataFile" type="file" accept=".prepej,application/json" hidden>
+  </header>
+  <iframe id="viewer" class="viewer" src="/demo/reports.web/preview/?empty=1&amp;zoom=auto" title="Reports Web Previewer"></iframe>
+</div>
+<script>
+const $=id=>document.getElementById(id),viewer=$('viewer'),status=$('status'),designerUrl='/demo/reports.web/design/',uploaded=new Map();
+let currentData=null,loadRevision=0,loadQueue=Promise.resolve(),generating=false;
+const selected=()=>$('sample').value,endpoint=action=>`api?action=${action}&sample=${encodeURIComponent(selected())}`,api=()=>viewer.contentWindow?.ReportsWeb;
+function readyButtons(){$('pdf').disabled=generating||!currentData||!status.dataset.sample;$('saveData').disabled=generating||!currentData||!status.dataset.sample;for(const id of ['sample','openData','pdfLocation','downloadPdf'])$(id).disabled=generating}
+function showError(error){status.textContent=`エラー: ${error.message}`;readyButtons()}
+function links(){const imported=uploaded.has(selected());$('designer').setAttribute('aria-disabled',String(imported));$('designer').tabIndex=imported?-1:0;$('designer').title=imported?'読み込んだ印刷データではなく、サンプル帳票の定義を編集する機能です':'このサンプルの帳票定義を別タブで編集';if(imported){$('designer').removeAttribute('href');return;}const url=new URL(endpoint('definition'),location.href).href;$('designer').href=`${designerUrl}?report=${encodeURIComponent(url)}&reportName=${encodeURIComponent(selected()+'.prepdj')}`}
+async function load(){
+  const revision=++loadRevision,sample=selected();currentData=null;status.textContent='印刷データを作成中…';delete status.dataset.sample;readyButtons();links();
+  try{let data=uploaded.get(sample);if(!data){const response=await fetch(`api?action=data&sample=${encodeURIComponent(sample)}`,{cache:'no-store'});if(!response.ok)throw new Error((await response.json()).error||`HTTP ${response.status}`);data=await response.json()}
+    loadQueue=loadQueue.catch(()=>{}).then(async()=>{if(revision!==loadRevision)return;await api().setPrintData(data);if(revision===loadRevision){currentData=data;status.dataset.sample=sample;status.textContent='準備完了';readyButtons()}});await loadQueue;
+  }catch(error){if(revision===loadRevision)showError(error)}
+}
+function download(blob,name){const a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+async function serverPdf(shouldDownload){
+  const sample=selected(),data=currentData,tab=shouldDownload?null:window.open('about:blank','_blank');
+  if(!shouldDownload&&!tab)throw new Error('別タブを開けませんでした。このサイトのポップアップを許可するか、ダウンロードを選んでください。');
+  if(tab){tab.opener=null;tab.document.title='PDFを作成中 — Reports Web';tab.document.body.innerHTML='<p style="font:14px sans-serif;padding:24px">サーバーでPDFを作成中…</p>'}
+  try{const response=await fetch(`api?action=server-pdf&sample=${encodeURIComponent(sample)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});if(!response.ok)throw new Error((await response.json()).error||`HTTP ${response.status}`);const blob=await response.blob();if(shouldDownload)download(blob,sample.replace(/\.prepej$/i,'')+'.pdf');else if(!tab.closed){const url=URL.createObjectURL(blob);tab.document.title='PDF — Reports Web';tab.document.body.style.margin='0';tab.document.body.innerHTML=`<object data="${url}" type="application/pdf" style="display:block;width:100vw;height:100vh"></object>`;setTimeout(()=>URL.revokeObjectURL(url),600000)}}catch(error){tab?.close();throw error}
+}
+async function generatePdf(){if(generating||!currentData)return;const server=$('pdfLocation').value==='server',save=$('downloadPdf').checked;generating=true;readyButtons();status.textContent=server?'サーバーでPDFを作成中…':'ブラウザでPDFを作成中…';try{if(server)await serverPdf(save);else await api().exportPdf(save);status.textContent='準備完了'}catch(error){showError(error)}finally{generating=false;readyButtons()}}
+async function acceptFile(file){if(generating)return;if(!file||!file.name.toLowerCase().endsWith('.prepej'))throw new Error('印刷データ（.prepej）を選択してください。');const data=JSON.parse(await file.text());if(!Array.isArray(data.Pages)||!data.Pages.length||(data.Format&&data.Format!=='Reports.net PrintData'))throw new Error('PREPEJ形式の印刷データではありません。');uploaded.set(file.name,data);let option=[...$('sample').options].find(x=>x.value===file.name);if(!option){option=new Option(file.name,file.name);$('sample').add(option)}$('sample').value=file.name;await load()}
+viewer.addEventListener('load',()=>load());$('sample').addEventListener('change',()=>load());$('pdf').onclick=generatePdf;
+$('downloadPdf').onchange=()=>{$('pdfHint').textContent=$('downloadPdf').checked?'PDFファイルとして保存します':'別タブで表示します'};
+$('saveData').onclick=()=>{if(currentData)download(new Blob([JSON.stringify(currentData,null,2)],{type:'application/json'}),selected().endsWith('.prepej')?selected():selected()+'.prepej')};
+$('openData').onclick=()=>$('dataFile').click();$('dataFile').onchange=e=>{const file=e.target.files?.[0];e.target.value='';if(file)acceptFile(file).catch(showError)};
+document.addEventListener('dragover',e=>{if(!e.dataTransfer?.types.includes('Files'))return;e.preventDefault();document.body.classList.add('drop-active')});document.addEventListener('dragleave',e=>{if(!e.relatedTarget)document.body.classList.remove('drop-active')});document.addEventListener('drop',e=>{e.preventDefault();document.body.classList.remove('drop-active');const file=e.dataTransfer?.files?.[0];if(file)acceptFile(file).catch(showError)});links();
+</script></body></html>

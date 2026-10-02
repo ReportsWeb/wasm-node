@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Web API / REST連携 — Reports.web</title>
+    <style>
+      :root {
+        --ink: #183047;
+        --muted: #61758a;
+        --blue: #0969da;
+        --cyan: #0c8599;
+        --green: #16835d;
+        --line: #d9e4ee;
+        --paper: #fff;
+        --soft: #f3f8fc;
+        --navy: #102f4b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: linear-gradient(135deg, #eaf5ff, #f7fbff 48%, #edf9f3);
+        color: var(--ink);
+        font:
+          14px/1.55 system-ui,
+          "Yu Gothic UI",
+          sans-serif;
+      }
+      .hero {
+        padding: 24px clamp(16px, 4vw, 52px);
+        background: var(--navy);
+        color: #fff;
+      }
+      .hero small {
+        color: #9fdbff;
+      }
+      .hero h1 {
+        margin: 3px 0 5px;
+        font-size: clamp(23px, 3vw, 36px);
+      }
+      .hero p {
+        margin: 0;
+        color: #d7e8f5;
+      }
+      .flow {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr auto 1fr;
+        gap: 9px;
+        align-items: center;
+        max-width: 980px;
+        margin: 18px auto 0;
+      }
+      .node {
+        padding: 10px;
+        border: 1px solid #ffffff38;
+        border-radius: 12px;
+        background: #ffffff10;
+        text-align: center;
+      }
+      .arrow {
+        font-size: 21px;
+        color: #72d5ff;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(280px, 390px) minmax(0, 1fr);
+        gap: 16px;
+        max-width: 1440px;
+        margin: 18px auto;
+        padding: 0 18px 24px;
+      }
+      .panel {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        box-shadow: 0 8px 26px #1d436518;
+        overflow: hidden;
+      }
+      .controls {
+        padding: 18px;
+      }
+      .controls h2 {
+        margin: 0 0 4px;
+        font-size: 18px;
+      }
+      .lead {
+        margin: 0 0 16px;
+        color: var(--muted);
+      }
+      label {
+        display: block;
+        font-weight: 700;
+        margin: 12px 0 5px;
+      }
+      select,
+      button {
+        font: inherit;
+      }
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #b9cad8;
+        border-radius: 9px;
+        background: #fff;
+      }
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+        margin-top: 14px;
+      }
+      button {
+        border: 0;
+        border-radius: 9px;
+        padding: 11px 10px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .primary {
+        background: var(--blue);
+        color: #fff;
+      }
+      .secondary {
+        background: #e5f6f2;
+        color: #075f49;
+      }
+      .ghost {
+        background: #edf3f8;
+        color: #29465e;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: wait;
+      }
+      .lesson {
+        margin-top: 16px;
+        padding: 13px;
+        border-left: 4px solid #f0a202;
+        background: #fff9e8;
+        border-radius: 8px;
+      }
+      .lesson strong {
+        display: block;
+      }
+      .trace {
+        margin-top: 16px;
+        border-top: 1px solid var(--line);
+        padding-top: 14px;
+      }
+      .trace h3 {
+        font-size: 14px;
+        margin: 0 0 7px;
+      }
+      .trace dl {
+        display: grid;
+        grid-template-columns: 74px 1fr;
+        gap: 4px 8px;
+        margin: 0;
+        font:
+          12px/1.45 ui-monospace,
+          Consolas,
+          monospace;
+      }
+      .trace dt {
+        color: var(--muted);
+      }
+      .trace dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+      .ok {
+        color: var(--green);
+      }
+      .error {
+        color: #b42318;
+      }
+      .viewer-head {
+        padding: 11px 15px;
+        background: #f7fafc;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .viewer-head span:last-child {
+        color: var(--muted);
+      }
+      iframe {
+        display: block;
+        width: 100%;
+        height: min(790px, 72vh);
+        border: 0;
+        background: #dbe4ea;
+      }
+      .toast {
+        min-height: 22px;
+        margin-top: 9px;
+        color: var(--muted);
+      }
+      @media (max-width: 820px) {
+        .flow {
+          grid-template-columns: 1fr;
+        }
+        .arrow {
+          transform: rotate(90deg);
+        }
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .actions {
+          grid-template-columns: 1fr 1fr;
+        }
+        iframe {
+          height: 68vh;
+        }
+      }
+      @media (max-width: 440px) {
+        .actions {
+          grid-template-columns: 1fr;
+        }
+        .hero {
+          padding: 18px 14px;
+        }
+        .layout {
+          padding: 0 10px;
+        }
+      }
+    </style>
+    <script src="config.js"></script>
+  </head>
+  <body>
+    <header class="hero">
+      <small>03. Web API／REST連携</small>
+        <h1><span id="language">帳票API</span>と、利用画面をきれいに分ける</h1>
+      <p>帳票を作る場所と使う場所が離れていても、PREPEJが橋渡しします。</p>
+      <div class="flow">
+        <div class="node">利用側Webアプリ<br /><small>HTTPで依頼</small></div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <b id="apiLanguage">各言語</b> 帳票API<br /><small
+            >データから帳票を作成</small
+          >
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          PREPEJ／PDF<br /><small>表示・保存・再利用</small>
+        </div>
+      </div>
+    </header>
+    <main class="layout">
+      <section class="panel controls">
+        <h2>通信して、結果を確かめる</h2>
+        <p class="lead">
+          ボタンを押すと、別サービスの帳票APIへ実際にアクセスします。
+        </p>
+        <label for="sample">帳票を選ぶ</label
+        ><select id="sample">
+          <option value="invoice">請求書</option>
+          <option value="estimate">見積書</option>
+          <option value="business-card">名刺</option>
+          <option value="products">商品一覧</option>
+          <option value="postal">郵便番号一覧</option>
+          <option value="multiples-of-ten">10の倍数</option>
+        </select>
+        <div class="actions">
+          <button id="receive" class="primary">1. PREPEJを受け取る</button
+          ><button id="pdf" class="secondary" disabled>2. PDFを受け取る</button
+          ><button id="save" class="ghost" disabled>PREPEJを保存</button
+          ><button id="errorTest" class="ghost">エラー応答も確認</button>
+        </div>
+        <div id="message" class="toast">
+          まず「PREPEJを受け取る」を押してください。
+        </div>
+        <aside class="lesson">
+          <strong>このサンプルで分かること</strong
+          >API側の言語を変えても、利用側は同じHTTP契約で動きます。PREPEJはファイル保存にもネットワーク通信にも使える印刷データです。
+        </aside>
+        <section class="trace">
+          <h3>直前のHTTP通信</h3>
+          <dl>
+            <dt>要求</dt>
+            <dd id="request">—</dd>
+            <dt>状態</dt>
+            <dd id="status">—</dd>
+            <dt>形式</dt>
+            <dd id="type">—</dd>
+            <dt>大きさ</dt>
+            <dd id="size">—</dd>
+            <dt>所要時間</dt>
+            <dd id="elapsed">—</dd>
+          </dl>
+        </section>
+      </section>
+      <section class="panel">
+        <div class="viewer-head">
+          <b>受け取った帳票</b><span>共通WASMプレビュアー</span>
+          <button id="toggleToolbar" class="ghost" disabled>ツールバーを非表示</button>
+        </div>
+        <iframe
+          id="viewer"
+          src="/demo/reports.web/preview/?empty=1&amp;zoom=auto"
+          title="印刷プレビュー"
+        ></iframe>
+      </section>
+    </main>
+    <script>
+      const cfg = window.REPORTS_REST_SAMPLE || {
+          language: "API",
+          api: "/report-api",
+          preview: "/preview/",
+        },
+        $ = (id) => document.getElementById(id);
+      $("language").textContent = cfg.language;
+      $("apiLanguage").textContent = cfg.language;
+      $("viewer").addEventListener("load", () => {
+        const reports = $("viewer").contentWindow.ReportsWeb;
+        const button = $("toggleToolbar");
+        const sync = () => {
+          button.textContent = reports.getState().chrome.toolbar
+            ? "ツールバーを非表示" : "ツールバーを表示";
+        };
+        reports.subscribe(sync); sync(); button.disabled = false;
+        button.onclick = () => {
+          if (reports.getState().chrome.toolbar) reports.hideAll();
+          else reports.showAll();
+        };
+      });
+      let current = null,
+        busy = false;
+      const MAX = 32 * 1024 * 1024,
+        TIMEOUT = 15000;
+      function state(v) {
+        busy = v;
+        for (const id of ["receive", "pdf", "errorTest"])
+          $(id).disabled = v || (id === "pdf" && !current);
+        $("save").disabled = v || !current;
+      }
+      function download(blob, name) {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = name;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      }
+      async function request(action, sample, method = "GET", body = null) {
+        const url = `${cfg.api}?action=${action}&sample=${encodeURIComponent(sample)}`,
+          controller = new AbortController(),
+          timer = setTimeout(() => controller.abort(), TIMEOUT),
+          started = performance.now();
+        $("request").textContent = `${method} ${url}`;
+        $("status").textContent = "通信中…";
+        $("status").className = "";
+        try {
+          const response = await fetch(url, {
+            method,
+            body,
+            headers: body ? { "Content-Type": "application/json" } : {},
+            cache: "no-store",
+            signal: controller.signal,
+          });
+          const blob = await response.blob();
+          if (blob.size > MAX)
+          throw new Error("応答が32MBの上限を超えました。");
+          $("status").textContent = `${response.status} ${response.statusText}`;
+          $("status").className = response.ok ? "ok" : "error";
+          $("type").textContent =
+            response.headers.get("content-type") || "不明";
+          $("size").textContent = `${blob.size.toLocaleString()} bytes`;
+          $("elapsed").textContent =
+            `${Math.round(performance.now() - started)} ms`;
+          if (!response.ok) {
+            let detail = "";
+            try {
+              detail = JSON.parse(await blob.text()).error || "";
+            } catch {}
+            throw new Error(detail || `HTTP ${response.status}`);
+          }
+          return blob;
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+      async function receive(sample = $("sample").value) {
+        state(true);
+        $("message").textContent = "帳票APIへ印刷データを依頼しています…";
+        try {
+          const blob = await request("data", sample),
+            data = JSON.parse(await blob.text());
+          if (!Array.isArray(data.Pages) || !data.Pages.length)
+            throw new Error("PREPEJにページがありません。");
+          const deadline = Date.now() + 15000;
+          while (!$("viewer").contentWindow?.ReportsWeb?.setPrintData) {
+            if (Date.now() >= deadline)
+              throw new Error("プレビュアーの準備が完了しませんでした。");
+            await new Promise((resolve) => setTimeout(resolve, 100));
+          }
+          await $("viewer").contentWindow.ReportsWeb.setPrintData(data);
+          current = { data, name: sample };
+          $("message").textContent =
+            `${data.Pages.length}ページのPREPEJを受信し、プレビューしました。`;
+        } catch (e) {
+          $("message").textContent =
+            e.name === "AbortError"
+              ? "15秒でタイムアウトしました。"
+              : `受信できませんでした：${e.message}`;
+        } finally {
+          state(false);
+        }
+      }
+      $("receive").onclick = () => receive();
+      $("sample").onchange = () => {
+        current = null;
+        state(false);
+        $("message").textContent =
+          "帳票を選びました。「PREPEJを受け取る」を押してください。";
+      };
+      $("save").onclick = () =>
+        download(
+          new Blob([JSON.stringify(current.data)], {
+            type: "application/json",
+          }),
+          current.name + ".prepej",
+        );
+      $("pdf").onclick = async () => {
+        state(true);
+        $("message").textContent =
+          "受信済みPREPEJを帳票APIへ送り、PDFを依頼しています…";
+        try {
+          const blob = await request(
+            "server-pdf",
+            current.name,
+            "POST",
+            JSON.stringify(current.data),
+          );
+          download(blob, current.name + ".pdf");
+          $("message").textContent = "PDFを受信し、ダウンロードしました。";
+        } catch (e) {
+          $("message").textContent = `PDFを取得できませんでした：${e.message}`;
+        } finally {
+          state(false);
+        }
+      };
+      $("errorTest").onclick = async () => {
+        state(true);
+        $("message").textContent =
+          "存在しない帳票を依頼し、安全なエラー応答を確認しています…";
+        try {
+          await request("data", "not-found");
+          $("message").textContent = "想定外に成功しました。";
+        } catch (e) {
+          $("message").textContent =
+            `想定どおりAPIが拒否しました：${e.message}`;
+        } finally {
+          state(false);
+        }
+      };
+    </script>
+  </body>
+</html>

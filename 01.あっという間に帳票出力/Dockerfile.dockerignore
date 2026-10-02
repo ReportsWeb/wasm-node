@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+.env
+README.md
+compose*.yaml
+Start.ps1
+Stop.ps1
+start.sh
+stop.sh

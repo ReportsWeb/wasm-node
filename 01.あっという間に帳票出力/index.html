@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ja"><meta charset="utf-8"><title>Node.js あっという間に帳票出力</title>
+<style>html,body{height:100%;margin:0;font-family:sans-serif}body{display:grid;grid-template-rows:auto 1fr}header{padding:8px;background:#f3f5f7}iframe{width:100%;height:100%;border:0}</style>
+<header><button id="pdf" disabled>PDFを保存</button> <button id="toggleToolbar" disabled>ツールバーを非表示</button> <span id="status" role="status">読み込み中...</span></header>
+<iframe id="viewer" title="帳票プレビュー" src="/reports.web/preview/?empty=1&zoom=auto"></iframe>
+<script>
+let printData;
+const viewer=document.querySelector('#viewer'),status=document.querySelector('#status');
+const pdf=document.querySelector('#pdf'),toolbar=document.querySelector('#toggleToolbar');
+viewer.addEventListener('load',async()=>{
+  try {
+    const reports=viewer.contentWindow.ReportsWeb;
+    if(!reports)throw new Error('プレビュアーを読み込めませんでした');
+    const sync=()=>{toolbar.textContent=reports.getState().chrome.toolbar?'ツールバーを非表示':'ツールバーを表示';};
+    toolbar.onclick=()=>{if(reports.getState().chrome.toolbar)reports.hideAll();else reports.showAll();};
+    reports.subscribe(sync);sync();toolbar.disabled=false;
+    const response=await fetch('/print-data');
+    if(!response.ok)throw new Error(`印刷データの取得に失敗しました（HTTP ${response.status}）`);
+    printData=await response.json();
+    await reports.setPrintData(printData);
+    status.textContent='1ページを表示しました';pdf.disabled=false;
+  }catch(error){status.textContent=`表示できませんでした：${error.message}。READMEの「困ったとき」を確認し、再読み込みしてください。`;}
+});
+pdf.addEventListener('click',async()=>{
+  pdf.disabled=true;status.textContent='PDFを作成中...';
+  try {
+    const response=await fetch('/pdf',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(printData)});
+    if(!response.ok)throw new Error(`HTTP ${response.status}`);
+    const blob=await response.blob();
+    if(await blob.slice(0,5).text()!=='%PDF-')throw new Error('PDF以外の応答が返りました');
+    const a=document.createElement('a'),url=URL.createObjectURL(blob);
+    a.href=url;a.download='node-quick-start.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    status.textContent='PDFを保存しました';
+  }catch(error){status.textContent=`PDFを保存できませんでした：${error.message}。起動状態を確認してから、もう一度お試しください。`;}
+  finally{pdf.disabled=false;}
+});
+</script>
+<!-- 01 is deliberately self-contained: the editing flow is visible in this file. -->
+<script>
+const edit=document.createElement('button');
+edit.textContent='デザイナーでデザインを変更';edit.disabled=true;
+toolbar.after(' ',edit);
+const editor=document.createElement('dialog');
+editor.style.cssText='width:96vw;height:94vh;max-width:none;padding:0';
+editor.innerHTML='<div style="display:flex;flex-direction:column;height:100%"><header><button id="applyDesign">変更を反映してプレビューへ戻る</button> <button id="cancelDesign">変更せず戻る</button> <span id="designStatus" role="status">文字・色・配置を自由に変更できます。元ファイルは上書きしません。</span></header><iframe title="帳票デザイナー" style="flex:1"></iframe></div>';
+document.body.append(editor);
+const designFrame=editor.querySelector('iframe'),applyDesign=editor.querySelector('#applyDesign');
+let designUrl;
+const readyTimer=setInterval(()=>{if(printData){edit.disabled=false;clearInterval(readyTimer);}},100);
+function closeDesign(){editor.close();designFrame.src='about:blank';if(designUrl)URL.revokeObjectURL(designUrl);}
+editor.querySelector('#cancelDesign').onclick=closeDesign;
+editor.addEventListener('cancel',event=>{event.preventDefault();closeDesign();});
+edit.onclick=()=>{
+  try{
+    // Put the sample values in the designer too, so editing the visible text
+    // is not silently overwritten by the original program values on return.
+    const page=printData.Pages[0];
+    const definition=structuredClone(page.Definition||printData.Definition);
+    for(const value of page.Values||[]){
+      const object=definition.Objects.find(object=>object.Name===value.Name);
+      if(object&&value.Type==='DynamicText')object.Text=String(value.Value??'');
+    }
+    designUrl=URL.createObjectURL(new Blob([JSON.stringify(definition)],{type:'application/json'}));
+    designFrame.src='/reports.web/design/index.html?host=trial&lang=ja&reportName=quick-report.prepdj&report='+encodeURIComponent(designUrl);
+    editor.showModal();
+  }catch(error){status.textContent='デザイナーを開けませんでした：'+error.message;}
+};
+applyDesign.onclick=async()=>{
+  const bridge=designFrame.contentWindow.ReportsWebDesigner;
+  const message=editor.querySelector('#designStatus');
+  if(!bridge?.isReady()){message.textContent='デザイナーを準備しています。少し待ってから反映してください。';return;}
+  applyDesign.disabled=true;
+  try{
+    const definition=bridge.exportDefinition();
+    const next={Format:'Reports.net PrintData',Version:'1.0',Definition:definition,
+      Pages:[{Index:1,Definition:null,Values:[],DynamicAttributes:[]}]};
+    await viewer.contentWindow.ReportsWeb.setPrintData(next);
+    printData=next; // The PDF button sends this exact same edited document.
+    closeDesign();
+    status.textContent='変更したデザインを反映しました。PDFにも同じ内容が出力されます。';
+  }catch(error){message.textContent='反映できませんでした：'+error.message;}
+  finally{applyDesign.disabled=false;}
+};
+</script>
+</html>
