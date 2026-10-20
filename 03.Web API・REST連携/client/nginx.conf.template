@@ -15,7 +15,8 @@ server {
     proxy_set_header Host $host;
     proxy_set_header X-Forwarded-Proto $scheme;
     proxy_read_timeout 95s;
-    client_max_body_size 16m;
+    # 4 つのサーバーと各言語のサンプルで同じ 64MiB（2026-10-13 決定）。超えた分はアプリが日本語の 413 で答えるよう、少し大きくする。
+    client_max_body_size 65m;
   }
 
   location /preview/ {

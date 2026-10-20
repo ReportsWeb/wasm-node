@@ -11,7 +11,7 @@ import pg from "pg";
 import { SampleCatalog, SAMPLES } from "./SampleCatalog.js";
 import { ReportsWebEngine, ReportsWebEngineError, type JsonObject } from "@pao-at-office/reports-web";
 export const BASE = "/demo/reports.web/samples/node";
-const MAX = 32 * 1024 * 1024;
+const MAX = 64 * 1024 * 1024;
 const HERE = fileURLToPath(new URL("..", import.meta.url));
 export class HttpError extends Error {
   constructor(
@@ -77,6 +77,10 @@ export async function inlineAssets(
       )
         throw new HttpError(400, "登録済みの画像を指定してください。");
     }
+    // B18: a definition image is embedded in ImageDataBase64. A data: URI in ImagePath made
+    // the Pure Java SDK refuse the PREPEJ and WPF throw PathTooLongException.
+    const embedded = typeof result.ImagePath === "string" ? /^data:image\/[^,;]*;base64,(.*)$/s.exec(result.ImagePath) : null;
+    if (embedded) { result.ImagePath = ""; result.ImageDataBase64 = embedded[1]; }
     return result;
   }
   if (typeof value === "string") {
@@ -101,21 +105,21 @@ async function embedDefinitionImages(d: JsonObject, s: string, c: Config) {
       a = "kakuin.png";
     if (s === "estimate" && o.Name === "Image2") a = "estimate-header.jpg";
     if (a) {
-      o.ImagePath = "data:" + mime(a) + ";base64," + (await asset(c, a)).toString("base64");
-      o.ImageDataBase64 = "";
+      o.ImagePath = "";
+      o.ImageDataBase64 = (await asset(c, a)).toString("base64"); // B18
     }
   }
 }
 async function readBody(req: IncomingMessage) {
   if (Number(req.headers["content-length"] ?? 0) > MAX)
-    throw new HttpError(413, "印刷データは32MiB以内にしてください。");
+    throw new HttpError(413, "印刷データは64MiB以内にしてください。");
   let n = 0;
   const chunks: Buffer[] = [];
   for await (const part of req) {
     const b = Buffer.from(part);
     n += b.length;
     if (n > MAX)
-      throw new HttpError(413, "印刷データは32MiB以内にしてください。");
+      throw new HttpError(413, "印刷データは64MiB以内にしてください。");
     chunks.push(b);
   }
   try {

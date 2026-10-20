@@ -329,7 +329,7 @@
       });
       let current = null,
         busy = false;
-      const MAX = 32 * 1024 * 1024,
+      const MAX = 64 * 1024 * 1024,
         TIMEOUT = 15000;
       function state(v) {
         busy = v;
@@ -362,7 +362,7 @@
           });
           const blob = await response.blob();
           if (blob.size > MAX)
-          throw new Error("応答が32MBの上限を超えました。");
+          throw new Error("応答が64MBの上限を超えました。");
           $("status").textContent = `${response.status} ${response.statusText}`;
           $("status").className = response.ok ? "ok" : "error";
           $("type").textContent =

@@ -47,7 +47,11 @@ document.body.append(editor);
 const designFrame=editor.querySelector('iframe'),applyDesign=editor.querySelector('#applyDesign');
 let designUrl;
 const readyTimer=setInterval(()=>{if(printData){edit.disabled=false;clearInterval(readyTimer);}},100);
-function closeDesign(){editor.close();designFrame.src='about:blank';if(designUrl)URL.revokeObjectURL(designUrl);}
+function closeDesign(){
+  // Applied or cancelled on purpose: the designer must not ask "leave site?" when it is unloaded.
+  try{designFrame.contentWindow?.ReportsWebDesigner?.discardChanges?.();}catch{}
+  editor.close();designFrame.src='about:blank';if(designUrl)URL.revokeObjectURL(designUrl);
+}
 editor.querySelector('#cancelDesign').onclick=closeDesign;
 editor.addEventListener('cancel',event=>{event.preventDefault();closeDesign();});
 edit.onclick=()=>{

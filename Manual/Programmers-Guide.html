@@ -8,7 +8,7 @@ a{color:#116c88;text-underline-offset:3px}table{border-collapse:collapse;width:1
 @media(max-width:700px){header{position:static}main{margin:0;padding:28px 20px;box-shadow:none}h1{font-size:24px}h2{font-size:19px}.toc{padding:18px}}
 @page{size:A4;margin:17mm 17mm 20mm}
 @media print{body{background:#fff;font-size:10.2pt;line-height:1.68;-webkit-print-color-adjust:exact;print-color-adjust:exact}header{display:none}main{max-width:none;margin:0;padding:0;box-shadow:none}.cover{break-after:page}.toc{break-after:page;margin:0;padding:0;border:0;background:#fff}.toc h2{border:0;padding:0;color:#123e48}h1{font-size:21pt}h2{font-size:14pt;margin-top:24px}h3{font-size:11.5pt}p{orphans:3;widows:3}table{font-size:8.5pt}tr,pre,img{break-inside:avoid}pre{font-size:8.3pt}img{max-height:92mm}a{color:#174f60;text-decoration:none}}
-</style></head><body><header><a data-manual-index href="../../../README.html">マニュアル一覧</a><a href="Programmers-Guide.pdf">PDFで読む</a></header><main><section class="cover"><h1 id="reportsweb-typescriptnodejs-wasm-api">Reports.web TypeScript／Node.js WASM言語ラッパー プログラマーズガイド／APIリファレンス</h1>
+</style></head><body><header><a data-manual-index href="https://www.pao.ac/reports.web/man.html">マニュアル一覧</a><a href="Programmers-Guide.pdf">PDFで読む</a></header><main><section class="cover"><h1 id="reportsweb-typescriptnodejs-wasm-api">Reports.web TypeScript／Node.js WASM言語ラッパー プログラマーズガイド／APIリファレンス</h1>
 <p>Reports.webのWASM言語ラッパーは、TypeScript／Node.jsの業務データから、共通の印刷データPREPEJを組み立てるための小さなライブラリです。帳票の座標計算やPDF描画を各言語へ重複実装せず、ブラウザまたはサーバーの共通WASM帳票エンジンへ任せます。</p>
 <p>この一冊では、初めて利用する方が次のプログラムを作れるようになることを目標にしています。</p>
 <ul>
@@ -18,7 +18,7 @@ a{color:#116c88;text-underline-offset:3px}table{border-collapse:collapse;width:1
 <li>サーバー側の共通WASMエンジンでPDFを生成・配信する</li>
 <li>TypeScript／Node.jsラッパーの主要APIを調べる</li>
 </ul>
-<p><img alt="WASM言語ラッパーの全体構成" src="images/wasm-wrapper-architecture.svg" /></p>
+<p><svg style="max-width:100%;height:auto" id="arch-root" xmlns="http://www.w3.org/2000/svg" width="1120" height="520" viewBox="0 0 1120 520" role="img" aria-labelledby="arch-t arch-d"><title id="arch-t">WASM言語ラッパーの全体構成</title><desc id="arch-d">業務アプリが言語別ラッパーでPREPEJを作り、ブラウザまたはサーバーの共通WASM帳票エンジンへ渡す流れ</desc><defs><linearGradient id="arch-bg" x2="1" y2="1"><stop stop-color="#103f4c"/><stop offset="1" stop-color="#176d70"/></linearGradient><filter id="arch-s"><feDropShadow dx="0" dy="5" stdDeviation="6" flood-opacity=".18"/></filter><marker id="arch-a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5 0 9z" fill="#e2ad39"/></marker></defs><rect width="1120" height="520" rx="24" fill="url(#arch-bg)"/><text x="56" y="62" fill="#fff" font-family="Yu Gothic,Meiryo,sans-serif" font-size="28" font-weight="700">いつもの言語でデータを作り、描画は共通WASMへ。</text><text x="56" y="96" fill="#d7eef0" font-family="Yu Gothic,Meiryo,sans-serif" font-size="16">薄いラッパーは描画処理を持たず、持ち運べる印刷データ PREPEJ を組み立てます。</text><g filter="url(#arch-s)" font-family="Yu Gothic,Meiryo,sans-serif"><rect x="56" y="142" width="260" height="280" rx="18" fill="#fff"/><text x="84" y="184" fill="#176d70" font-size="15" font-weight="700">YOUR APPLICATION</text><text x="84" y="221" fill="#173842" font-size="23" font-weight="700">業務アプリ</text><text x="84" y="255" fill="#4f6870" font-size="15">DB・API・業務ロジック</text><rect x="82" y="286" width="208" height="92" rx="13" fill="#eaf5f3"/><text x="100" y="319" fill="#176d70" font-size="16" font-weight="700">WASM言語ラッパー</text><text x="100" y="347" fill="#405d65" font-size="14">PrintData API</text><text x="100" y="369" fill="#405d65" font-size="14">座標・PDF描画は持たない</text><rect x="416" y="210" width="246" height="144" rx="72" fill="#fff8df" stroke="#e2ad39" stroke-width="3"/><text x="539" y="264" text-anchor="middle" fill="#7c5b0b" font-size="17" font-weight="700">PREPEJ</text><text x="539" y="294" text-anchor="middle" fill="#173842" font-size="20" font-weight="700">印刷データ</text><text x="539" y="321" text-anchor="middle" fill="#52666b" font-size="13">JSON・保存・HTTP・メール添付</text><rect x="760" y="142" width="304" height="280" rx="18" fill="#fff"/><text x="790" y="184" fill="#176d70" font-size="15" font-weight="700">ONE ENGINE, TWO ROUTES</text><text x="790" y="221" fill="#173842" font-size="23" font-weight="700">共通WASM帳票エンジン</text><rect x="788" y="254" width="248" height="62" rx="12" fill="#e9f4fb"/><text x="912" y="280" text-anchor="middle" fill="#176385" font-size="16" font-weight="700">ブラウザ内で生成</text><text x="912" y="302" text-anchor="middle" fill="#52666b" font-size="13">SVGプレビュー・PDF・印刷</text><rect x="788" y="332" width="248" height="62" rx="12" fill="#f1edf9"/><text x="912" y="358" text-anchor="middle" fill="#66518c" font-size="16" font-weight="700">サーバーで生成</text><text x="912" y="380" text-anchor="middle" fill="#52666b" font-size="13">PDF・定期処理・配信</text></g><path d="M316 282H408" stroke="#e2ad39" stroke-width="5" marker-end="url(#arch-a)"/><path d="M662 282H752" stroke="#e2ad39" stroke-width="5" marker-end="url(#arch-a)"/><text x="362" y="268" text-anchor="middle" fill="#fff" font-family="Yu Gothic,Meiryo,sans-serif" font-size="13">組み立てる</text><text x="707" y="268" text-anchor="middle" fill="#fff" font-family="Yu Gothic,Meiryo,sans-serif" font-size="13">渡す</text><text x="560" y="474" text-anchor="middle" fill="#d7eef0" font-family="Yu Gothic,Meiryo,sans-serif" font-size="14">PHP · Java · TypeScript / Node.js · C# / .NET · Rust · Go · Ruby ─ 同じPREPEJで同じ結果へ</text></svg></p>
 </section><nav class="toc"><h2>目次</h2><div class="toc">
 <ul>
 <li><a href="#1"><span class="toc-label">1. 最初に知っておくこと</span><span class="toc-page" data-marker="RM001">3</span></a><ul>
@@ -35,19 +35,23 @@ a{color:#116c88;text-underline-offset:3px}table{border-collapse:collapse;width:1
 <li><a href="#43"><span class="toc-label">4.3 ページごとに定義を切り替える</span><span class="toc-page" data-marker="RM010">7</span></a></li>
 </ul>
 </li>
-<li><a href="#5"><span class="toc-label">5. 明細と改ページ</span><span class="toc-page" data-marker="RM011">7</span></a></li>
-<li><a href="#6"><span class="toc-label">6. 画像・バーコード・動的属性</span><span class="toc-page" data-marker="RM012">7</span></a></li>
-<li><a href="#7"><span class="toc-label">7. ブラウザへ渡して表示する</span><span class="toc-page" data-marker="RM013">8</span></a></li>
-<li><a href="#8-pdf"><span class="toc-label">8. PDFを作る二つの場所</span><span class="toc-page" data-marker="RM014">9</span></a><ul>
-<li><a href="#81"><span class="toc-label">8.1 ブラウザで作る</span><span class="toc-page" data-marker="RM015">9</span></a></li>
-<li><a href="#82"><span class="toc-label">8.2 サーバーで作る</span><span class="toc-page" data-marker="RM016">9</span></a></li>
+<li><a href="#5"><span class="toc-label">5. 明細と改ページ</span><span class="toc-page" data-marker="RM011">7</span></a><ul>
+<li><a href="#51"><span class="toc-label">5.1 空文字で罫線・図形を消す</span><span class="toc-page" data-marker="RM012">7</span></a></li>
+<li><a href="#52-1"><span class="toc-label">5.2 何も書かない繰返しは1行目だけ描く</span><span class="toc-page" data-marker="RM013">8</span></a></li>
 </ul>
 </li>
-<li><a href="#9-prepej"><span class="toc-label">9. PREPEJを保存・再利用する</span><span class="toc-page" data-marker="RM017">9</span></a></li>
-<li><a href="#10-web-api"><span class="toc-label">10. Web APIとデータベース</span><span class="toc-page" data-marker="RM018">9</span></a></li>
-<li><a href="#11"><span class="toc-label">11. テストとリリース確認</span><span class="toc-page" data-marker="RM019">10</span></a></li>
-<li><a href="#12_1"><span class="toc-label">12. よくある問題</span><span class="toc-page" data-marker="RM020">10</span></a></li>
-<li><a href="#13_1"><span class="toc-label">13. 配置・更新・ライセンス</span><span class="toc-page" data-marker="RM021">10</span></a></li>
+<li><a href="#6"><span class="toc-label">6. 画像・バーコード・動的属性</span><span class="toc-page" data-marker="RM014">8</span></a></li>
+<li><a href="#7"><span class="toc-label">7. ブラウザへ渡して表示する</span><span class="toc-page" data-marker="RM015">9</span></a></li>
+<li><a href="#8-pdf"><span class="toc-label">8. PDFを作る二つの場所</span><span class="toc-page" data-marker="RM016">10</span></a><ul>
+<li><a href="#81"><span class="toc-label">8.1 ブラウザで作る</span><span class="toc-page" data-marker="RM017">10</span></a></li>
+<li><a href="#82"><span class="toc-label">8.2 サーバーで作る</span><span class="toc-page" data-marker="RM018">10</span></a></li>
+</ul>
+</li>
+<li><a href="#9-prepej"><span class="toc-label">9. PREPEJを保存・再利用する</span><span class="toc-page" data-marker="RM019">11</span></a></li>
+<li><a href="#10-web-api"><span class="toc-label">10. Web APIとデータベース</span><span class="toc-page" data-marker="RM020">11</span></a></li>
+<li><a href="#11"><span class="toc-label">11. テストとリリース確認</span><span class="toc-page" data-marker="RM021">11</span></a></li>
+<li><a href="#12_1"><span class="toc-label">12. よくある問題</span><span class="toc-page" data-marker="RM022">12</span></a></li>
+<li><a href="#13_1"><span class="toc-label">13. 配置・更新・ライセンス</span><span class="toc-page" data-marker="RM023">12</span></a></li>
 </ul>
 </div>
 </nav><section class="chapters"><h2 id="1">1. 最初に知っておくこと<span class="page-marker">RM001</span></h2>
@@ -230,7 +234,43 @@ for (let offset = 0, page = 1; offset &lt; details.length; offset += 20, page++)
 }
 </code></pre>
 <p>1ページの行数は帳票定義と業務仕様から決めます。最終ページの空行を描画するか、明細ごとに罫線を出すかもプログラム側で明示します。ページ番号はPREPEJのページ順と、帳票へ表示する業務上のページ番号を分けて考えます。</p>
-<h2 id="6">6. 画像・バーコード・動的属性<span class="page-marker">RM012</span></h2>
+<h3 id="51">5.1 空文字で罫線・図形を消す<span class="page-marker">RM012</span></h3>
+<p>罫線・四角・円（Line、DynamicLine、Square／Rectangle、Circle／Ellipse）は、値で表示を切り替えられます。</p>
+<table>
+<thead>
+<tr>
+<th>書く値</th>
+<th>罫線・図形</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>""</code>（空文字）</td>
+<td>描かない（消える）</td>
+</tr>
+<tr>
+<td><code>null</code>、または何も書かない</td>
+<td>定義どおり描く</td>
+</tr>
+<tr>
+<td><code>""</code>以外の値（例 <code>"1"</code>）</td>
+<td>描く。値は表示には使わない</td>
+</tr>
+</tbody>
+</table>
+<p>繰返しの行でも、1つだけの図形でも同じです。最初に書いたときも、別の値のあとに書いたときも同じです。表の行を途中で終える、合計行の上だけ線を引かない、条件で枠を消す、などに使います。次の<code>明細線</code>は、定義にある罫線のオブジェクト名の例です。</p>
+<pre><code class="language-typescript">print.setValue(&quot;明細線&quot;, &quot;&quot;, row); // この行の罫線を消す
+</code></pre>
+<p><code>drawing=false</code>も描きません。PREPEJでは、図形の値が<code>""</code>なら<code>Drawing</code>が<code>true</code>でも描きません。</p>
+<p>文字の欄（Text）は別の規則です。値が<code>""</code>または<code>null</code>なら、文字も枠線も背景色も描きません。SVG・印刷・PDFで同じです。</p>
+<h3 id="52-1">5.2 何も書かない繰返しは1行目だけ描く<span class="page-marker">RM013</span></h3>
+<p>繰返し（<code>RepeatCount</code>が2以上）のある物体に、そのページで何も書かないと、定義どおり1つだけ、1行目の位置に描きます。行の数だけ並べては描きません。</p>
+<p>一部の行にだけ書くと、書いた行だけ描きます。書かなかった行は描きません。1行目に書かなければ、1行目も描きません。</p>
+<p>表の罫線や枠を全部の行に描くには、描きたい行それぞれに<code>null</code>（値なし）を書きます。罫線・図形は<code>null</code>なら描き、<code>""</code>なら消えます（5.1）。次の1行を上の明細のループに足すと、明細の行数ぶん<code>明細線</code>に<code>null</code>を書きます。<code>drawObject</code>は値なし（<code>null</code>）を書きます。</p>
+<pre><code class="language-typescript">print.drawObject(&quot;明細線&quot;, row); // この行の罫線を描く（null を書く）
+</code></pre>
+<p>文字の欄は、<code>null</code>を書くとその行の文字が空になります。定義の文字を出したい行には、その文字を書きます。PREPEJへ保存した印刷データでも同じです。</p>
+<h2 id="6">6. 画像・バーコード・動的属性<span class="page-marker">RM014</span></h2>
 <p>この抜粋では、ページ開始後の<code>print</code>、画像のdata URIを持つ<code>stampDataUri</code>、対応する「角印」「商品QR」「合計金額」を定義に用意していることを前提にします。</p>
 <pre><code class="language-typescript">print.setImage(&quot;角印&quot;, stampDataUri)
   .setBarcode(&quot;商品QR&quot;, &quot;https://example.jp/items/123&quot;)
@@ -240,7 +280,7 @@ for (let offset = 0, page = 1; offset &lt; details.length; offset += 20, page++)
 </code></pre>
 <p>画像は閲覧先でも取得できる管理下のURL、または許容サイズのdata URIにします。サーバーPDF生成では、任意の外部URLをそのまま取得するとSSRFにつながります。固定画像は許可リストまたはアプリ管理下のファイルから解決してください。</p>
 <p>動的属性では、名前・型・値を無検証のリクエストから直接渡さないでください。変更できる属性をアプリ側で限定し、数値範囲、色、配置、フォント名を検証します。</p>
-<h2 id="7">7. ブラウザへ渡して表示する<span class="page-marker">RM013</span></h2>
+<h2 id="7">7. ブラウザへ渡して表示する<span class="page-marker">RM015</span></h2>
 <p>TypeScript／Node.js APIはPREPEJを<code>application/json; charset=utf-8</code>で返します。ブラウザ側は共通のReports Web APIへ渡します。</p>
 <pre><code class="language-html">&lt;iframe id=&quot;reportsViewer&quot; title=&quot;帳票プレビュー&quot;
         style=&quot;width:100%;height:75vh;border:0&quot;&gt;&lt;/iframe&gt;
@@ -257,28 +297,60 @@ viewer.src = '/demo/reports.web/preview/?empty=1';
 <p>上は第3章で追加したデータAPIを使う処理の抜粋です。02では<code>public/index.html</code>が画面にあたり、すでに受信・表示・PDF保存の実装があります。まずそのソースと見比べてください。自作アプリでは配信先に合わせてURLを変更し、通信失敗を画面に表示します。</p>
 <p>親画面とプレビュアーは同一オリジンに置くのが最も簡単です。別オリジンで<code>postMessage</code>を使う場合は、送信元と送信先のoriginを固定し、<code>*</code>を本番環境で使わないでください。</p>
 <p>プレビュアー側では<code>setZoom("auto")</code>、ページ移動、検索、印刷、<code>exportPdf()</code>、<code>savePrintData()</code>を利用できます。独自画面へ表示面だけを組み込む場合は<code>hideAll()</code>でツール群を隠し、同じ機能を外側のボタンから呼び出します。</p>
-<h2 id="8-pdf">8. PDFを作る二つの場所<span class="page-marker">RM014</span></h2>
-<h3 id="81">8.1 ブラウザで作る<span class="page-marker">RM015</span></h3>
+<h2 id="8-pdf">8. PDFを作る二つの場所<span class="page-marker">RM016</span></h2>
+<h3 id="81">8.1 ブラウザで作る<span class="page-marker">RM017</span></h3>
 <p>PREPEJを利用者のブラウザへ渡し、ブラウザ内のWASMがPDFを生成します。サーバーのPDF描画負荷を抑え、プレビューからそのまま保存・印刷する操作に向きます。機密データをブラウザへ渡してよいかは、業務の認可設計で判断します。</p>
-<h3 id="82">8.2 サーバーで作る<span class="page-marker">RM016</span></h3>
+<h3 id="82">8.2 サーバーで作る<span class="page-marker">RM018</span></h3>
 <p>Node.jsから同一プロセスまたは共通Node/WASMサービスへPREPEJを渡します。 定期処理、メール添付、保存、監査、画面を開かない帳票生成に向きます。</p>
 <pre><code class="language-text">POST /render/pdf
 Content-Type: application/json
 
 &lt;PREPEJ JSON&gt;
 </code></pre>
-<p>成功時は<code>application/pdf</code>を返します。入力・出力サイズ、同時実行数、処理時間を制限し、失敗時の途中PDFを保存・配信しないでください。ブラウザ生成とサーバー生成は同じPREPEJを入力にするため、業務データ組立てを二重実装する必要はありません。</p>
-<h2 id="9-prepej">9. PREPEJを保存・再利用する<span class="page-marker">RM017</span></h2>
+<p>成功時は<code>application/pdf</code>を返します。失敗時は次の状態コードと、理由を書いたJSON（<code>{"error":"…"}</code>）を返します。</p>
+<table>
+<thead>
+<tr>
+<th>状態</th>
+<th>意味</th>
+<th>対処</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>入力の誤り。JSONが壊れている、数値が有限の数でない、幅・高さなどが負、定義の数値を文字列で書いた、ルートの<code>Version</code>が無い・<code>"1.0"</code>のような文字列でない、など</td>
+<td><code>error</code>の理由を見て、PREPEJを直します</td>
+</tr>
+<tr>
+<td>413</td>
+<td>大きすぎる要求。64MiBを超える、または64MiB以内でもサーバーのメモリーで処理できる量を超える</td>
+<td>ページを分けて送るか、Node.jsのメモリー上限（<code>--max-old-space-size</code>）を増やします</td>
+</tr>
+<tr>
+<td>408</td>
+<td>要求の本文が30秒以内に届かなかった。届かない本文で、後ろに並んだ要求を止めないためです</td>
+<td>送信側の接続を確かめて再実行します。時間は環境変数<code>REPORTS_ENGINE_BODY_TIMEOUT_MS</code>（ミリ秒）で変えられます</td>
+</tr>
+<tr>
+<td>503</td>
+<td>混雑。要求は本文の受け取りから PDF の生成まで1件ずつ順番に処理し、処理の開始まで10秒を超えて待った要求を断ります。処理が5分を超えた要求も断り、次の要求へ進みます</td>
+<td>しばらく待って再実行します。待ち時間は環境変数<code>REPORTS_ENGINE_QUEUE_WAIT_MS</code>、処理の時間の上限は<code>REPORTS_ENGINE_OPERATION_TIMEOUT_MS</code>（どちらもミリ秒）で変えられます</td>
+</tr>
+</tbody>
+</table>
+<p>408・413・503のときもサーバーは止まらず、次の要求を処理します。業務アプリ側でも処理時間を制限し、失敗時の途中PDFを保存・配信しないでください。ブラウザ生成とサーバー生成は同じPREPEJを入力にするため、業務データ組立てを二重実装する必要はありません。</p>
+<h2 id="9-prepej">9. PREPEJを保存・再利用する<span class="page-marker">RM019</span></h2>
 <p><code>save</code>は完成したPREPEJをUTF-8 JSONとして保存します。保存前にページをすべて確定してください。ファイル名には<code>.prepej</code>を使い、アップロード時には拡張子だけで信用せず、Format、Version、Definition、Pages、サイズ、ページ数を検証します。</p>
 <p>保存した文書は、Webプレビュアーの「開く」またはドラッグ＆ドロップで再表示できます。HTTPで受け渡す場合もファイルと同じJSONです。再印刷の証跡として保管する場合は、業務データの保持期間、暗号化、アクセス権、削除規則を定めます。</p>
-<h2 id="10-web-api">10. Web APIとデータベース<span class="page-marker">RM018</span></h2>
+<h2 id="10-web-api">10. Web APIとデータベース<span class="page-marker">RM020</span></h2>
 <p>DB列と帳票オブジェクト名はコードで明示的に対応付けます。SQLはプレースホルダーを使い、利用者が参照できる伝票かを取得前に確認します。日付、通貨、端数処理は帳票へ渡す前に業務規則で確定します。</p>
 <p>機密帳票のレスポンスには<code>Cache-Control: no-store</code>を設定します。内部例外、接続文字列、ファイルパスを利用者へ返さず、要求IDを安全なサーバーログへ残します。帳票定義や画像は可能なら公開ルート外へ置きます。</p>
-<h2 id="11">11. テストとリリース確認<span class="page-marker">RM019</span></h2>
+<h2 id="11">11. テストとリリース確認<span class="page-marker">RM021</span></h2>
 <p>PCへNode.jsを導入せずDockerだけで動かした場合は、まずREADMEの手順で表示・編集・PDF保存を確認します。PC側にもNode.js 22以降を用意した方は、02フォルダーで<code>npm ci</code>、<code>npm test</code>の順に実行すると、同梱の単体試験を実行できます。01の短い実装にはこの単体試験はありません。</p>
 <p>最低限、次を確認します。</p>
 <ul>
-<li>Formatが<code>Reports.net PrintData</code>、Versionが<code>1.0</code>である</li>
+<li>共通印刷データの形式識別子を持ち、Versionが<code>1.0</code>である</li>
 <li>PREPDJを設定せずにページを開始するとエラーになる</li>
 <li>ページを閉じずに次のページを開始できない</li>
 <li>日本語、改行、数値、真偽値、nullが壊れない</li>
@@ -289,7 +361,7 @@ Content-Type: application/json
 <li>ブラウザ生成とサーバー生成のページ数・主要表示が一致する</li>
 </ul>
 <p>ラッパー変更時はWASM描画エンジン全体を毎回再試験するのではなく、生成PREPEJが共通仕様と基準サンプルに一致することを中心に確認します。WASM、プレビュアー、フォント、画像処理を変更した場合は、別途描画回帰試験が必要です。</p>
-<h2 id="12_1">12. よくある問題<span class="page-marker">RM020</span></h2>
+<h2 id="12_1">12. よくある問題<span class="page-marker">RM022</span></h2>
 <table>
 <thead>
 <tr>
@@ -320,10 +392,14 @@ Content-Type: application/json
 </tr>
 <tr>
 <td>PDFだけ失敗する</td>
-<td>入力サイズ、画像サイズ、タイムアウト、同時実行制限、サーバーログの要求IDを確認します。</td>
+<td>バーコードの値、入力サイズ、画像サイズ、タイムアウト、サーバーログの要求IDを確認します。表せない値のバーコードがあると、PDFは対象のバーコードと値を示すエラーで止まります（プレビューでは枠に赤で「バーコードエラー」と表示します）。</td>
+</tr>
+<tr>
+<td>サーバーPDFが400・413・503になる</td>
+<td>応答JSONの<code>error</code>を見ます。400は入力の誤り、413は大きすぎる要求、503は混雑です。第8.2節の表を参照してください。</td>
 </tr>
 </tbody>
 </table>
-<h2 id="13_1">13. 配置・更新・ライセンス<span class="page-marker">RM021</span></h2>
+<h2 id="13_1">13. 配置・更新・ライセンス<span class="page-marker">RM023</span></h2>
 <p>ラッパー、プレビュアー、JavaScript／TypeScript、CSS、WASMは同じReports.web配布版から取り出してください。HTMLだけ、またはラッパーだけを別バージョンへ差し替えると、PREPEJや公開APIの互換性を判断できなくなります。</p>
-<p>現行の製品版への切替は、購入者のメールアドレスを含む電子署名付きの <code>reports-web.license</code> を、実際に帳票を出力する側へ配置して行います。購入者ごとにWASMを差し替える手順ではありません。ブラウザーとサーバーでは配置先が異なるため、<a href="../../../../Manual/Product-License.html">製品版を使い始める</a>に従ってください。ライセンスファイルを公開サンプルやソース管理へ混入させないでください。正式な動作環境、使用許諾、更新履歴、問い合わせ先は共通製品マニュアルを正本とします。開発ライセンスは開発用PC 1台につき1ライセンスです。</p></section></main></body></html>
+<p>現行の製品版への切替は、購入者のメールアドレスを含む電子署名付きの <code>reports-web.license</code> を、実際に帳票を出力する側へ配置して行います。購入者ごとにWASMを差し替える手順ではありません。ブラウザーとサーバーでは配置先が異なるため、<a href="https://www.pao.ac/reports.web/manual/Product-License.html">製品版を使い始める</a>に従ってください。ライセンスファイルを公開サンプルやソース管理へ混入させないでください。正式な動作環境、使用許諾、更新履歴、問い合わせ先は共通製品マニュアルを正本とします。開発ライセンスは開発用PC 1台につき1ライセンスです。</p></section></main></body></html>

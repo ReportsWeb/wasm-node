@@ -11,7 +11,7 @@ import pg from "pg";
 import { SampleCatalog, SAMPLES } from "./SampleCatalog.js";
 import { ReportsWebEngine, ReportsWebEngineError, type JsonObject } from "@pao-at-office/reports-web";
 export const BASE = "/demo/reports.web/samples/node";
-const MAX = 32 * 1024 * 1024;
+const MAX = 64 * 1024 * 1024;
 const HERE = fileURLToPath(new URL("..", import.meta.url));
 export class HttpError extends Error {
   constructor(
@@ -108,14 +108,14 @@ async function embedDefinitionImages(d: JsonObject, s: string, c: Config) {
 }
 async function readBody(req: IncomingMessage) {
   if (Number(req.headers["content-length"] ?? 0) > MAX)
-    throw new HttpError(413, "印刷データは32MiB以内にしてください。");
+    throw new HttpError(413, "印刷データは64MiB以内にしてください。");
   let n = 0;
   const chunks: Buffer[] = [];
   for await (const part of req) {
     const b = Buffer.from(part);
     n += b.length;
     if (n > MAX)
-      throw new HttpError(413, "印刷データは32MiB以内にしてください。");
+      throw new HttpError(413, "印刷データは64MiB以内にしてください。");
     chunks.push(b);
   }
   try {

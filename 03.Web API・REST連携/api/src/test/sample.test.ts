@@ -91,6 +91,15 @@ test("asset resolver uses exact registered local bytes and refuses remote/path n
   await assert.rejects(() => inlineAssets(c.assetBase + "../secret", c));
   await assert.rejects(() => inlineAssets(JSON.parse('{"__proto__":{}}'), c));
 });
+test("B18 definition images are embedded in ImageDataBase64, not as a data: URI ImagePath", async () => {
+  const resolved = await inlineAssets({ Objects: [
+    { Name: "Image1", ImagePath: config.assetBase + "kakuin.png", ImageDataBase64: "" },
+    { Name: "Image2", ImagePath: "data:image/png;base64,AQID", ImageDataBase64: "" },
+  ] }, config);
+  assert.equal(resolved.Objects[0].ImagePath, "");
+  assert.match(resolved.Objects[0].ImageDataBase64, /^iVBOR/);
+  assert.deepEqual([resolved.Objects[1].ImagePath, resolved.Objects[1].ImageDataBase64], ["", "AQID"]);
+});
 test("HTTP catalog/data/definition/static/asset and validation", async () => {
   const app = createApplication(
     config,

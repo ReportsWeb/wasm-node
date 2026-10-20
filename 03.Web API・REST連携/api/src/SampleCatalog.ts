@@ -17,6 +17,29 @@ export type QueryRows = (
 ) => Promise<JsonObject[]>;
 const number = (v: any) =>
   Number(v).toLocaleString("en-US", { maximumFractionDigits: 0 });
+
+// Reports.NET invoice: round operands to even before multiplying; N0 is display-only.
+const invoiceValue = (v: any): number => {
+  if (v == null || String(v).trim() === '') throw new Error('Invoice numeric value is required');
+  const n = Number(v);
+  if (!Number.isFinite(n)) throw new Error('Invalid invoice numeric value');
+  return n;
+};
+const invoiceEven = (n: number): number => {
+  const a = Math.abs(n), f = Math.floor(a), d = a - f;
+  return Math.sign(n) * (d < .5 ? f : d > .5 ? f + 1 : f % 2 === 0 ? f : f + 1);
+};
+const invoiceInteger = (v: any): number => {
+  const n = invoiceEven(invoiceValue(v));
+  if (!Number.isSafeInteger(n)) throw new Error('Invoice integer exceeds exact JavaScript range');
+  return n === 0 ? 0 : n;
+};
+const invoiceNumber = (v: any): string => {
+  const n = invoiceEven(invoiceValue(v));
+  if (!Number.isSafeInteger(n)) throw new Error('Invoice display exceeds exact JavaScript range');
+  return n.toLocaleString('en-US', {maximumFractionDigits:0});
+};
+
 const date = (v: Date, japanese = false) => {
   const p = Object.fromEntries(
     new Intl.DateTimeFormat("en-US", {
@@ -77,6 +100,12 @@ export class SampleCatalog {
         const p = new PrintData().setDefinition(d).pageStart();
         if (s === "quick-start")
           p.setValue("Text2", "Webブラウザで作った\n印刷データです。");
+        // 名刺は 5 段。繰返しの物体は、何も書かないと 1 段目にしか描かない（原本と同じ、D-37）。
+        // 各段に定義の文字をそのまま書く。
+        if (s === "business-card")
+          for (const o of d.Objects)
+            for (let i = 0; i < (o.RepeatCount ?? o.Repeat ?? 0); i++)
+              p.setValue(o.Name, o.Text ?? "", i);
         return p.pageEnd();
       }
     }
@@ -95,7 +124,7 @@ export class SampleCatalog {
         const i = (page - 1) * 15 + line + 1;
         p.setValue("行番号", i, line)
           .setValue("10倍数", i * 10, line)
-          .setValue("横線", "", line);
+          .drawObject("横線", line); // 罫線は値を書かずに描く（"" を書くと描かない。原本と同じ、D-33）
         // 100で割り切れる値だけ、この行の文字色を青にする。
         if ((i * 10) % 100 === 0) p.changeAttributes("10倍数", { foreground: "#FF0000FF" }, line);
       }
@@ -118,8 +147,8 @@ export class SampleCatalog {
         p.setValue("郵便番号", v[0] ?? "", i)
           .setValue("市区町村", v[1] ?? "", i)
           .setValue("住所", v[2] ?? "", i)
-          .setValue("横罫線", "", i);
-        if (page >= 5 && i % 2 === 1) p.setValue("網掛け", "", i);
+          .drawObject("横罫線", i);
+        if (page >= 5 && i % 2 === 1) p.drawObject("網掛け", i);
       });
       if (page < 5) {
         const v = Object.values(chunk[0]);
@@ -160,8 +189,11 @@ export class SampleCatalog {
           "数量青",
           "単価青",
           "金額青",
+          // 品名青・単価青と同じ位置の帯。何も書かないと 1 行目にしか描かない（D-37）。
+          "Square5",
+          "Square10",
         ])
-          p.setValue(n, "", i);
+          p.drawObject(n, i); // 白・青の帯（四角形）。"" を書くと描かない（D-33）
       details
         .filter((r) => String(r["見積番号"]) === String(h["見積番号"]))
         .forEach((r, i) =>
@@ -210,7 +242,7 @@ export class SampleCatalog {
         nextX = x + (base.Width + adjust[j]) * px;
       }
       for (let i = 0; i < maxH; i++) {
-        p.setValue("hLine", "", i).setValue("LineRect", "", i);
+        p.drawObject("hLine", i).drawObject("LineRect", i); // 罫線・背景は値を書かずに描く（D-33）
         if (i === 0) p.changeAttributes("hLine", { borderWidth: 0.5 * px }, i);
         if (i === 1) p.changeAttributes("hLine", { strokeStyle: "Double" }, i);
         const color =
@@ -251,7 +283,7 @@ export class SampleCatalog {
         }
       }
       for (let j = 0; j <= maxV; j++) {
-        p.setValue("vLine", "", j).changeAttributes(
+        p.drawObject("vLine", j).changeAttributes(
           "vLine",
           { x: j < maxV ? columnX[j] : nextX },
           j,
@@ -266,29 +298,30 @@ export class SampleCatalog {
       details
         .filter((r) => String(r["請求番号"]) === String(h["請求番号"]))
         .forEach((r, i) => {
-          const amount = Number(r["数量"]) * Number(r["単価"]);
+          const amount = invoiceInteger(r["数量"]) * invoiceInteger(r["単価"]);
+          if (!Number.isSafeInteger(amount) || !Number.isSafeInteger(total + amount)) throw new Error('Invoice total exceeds exact JavaScript range');
           total += amount;
           const row = i + 1;
           p.setValue("field1", r["品番"], row)
             .setValue("field2", r["品名"], row)
             .setValue("field3", r["数量"], row)
-            .setValue("field4", number(r["単価"]), row)
-            .setValue("field5", number(amount), row);
+            .setValue("field4", invoiceNumber(r["単価"]), row)
+            .setValue("field5", invoiceNumber(amount), row);
         });
       const tax = total * 0.05;
       ["小計", "消費税", "合計"].forEach((label, k) => {
         const row = maxH - 3 + k;
         p.setValue("field4", label, row)
-          .setValue("field5", number([total, tax, total + tax][k]), row)
+          .setValue("field5", invoiceNumber([total, tax, total + tax][k]), row)
           .changeAttributes(
             "field4",
             { fontSize: 16, bold: true, horizontalAlignment: "Center" },
             row,
           );
       });
-      p.setValue("txtTotal", number(total + tax))
+      p.setValue("txtTotal", invoiceNumber(total + tax))
         .changeAttributes("hLine", { strokeStyle: "Double" }, maxH - 3)
-        .setValue("hLine", "", maxH)
+        .drawObject("hLine", maxH)
         .changeAttributes("hLine", { borderWidth: 0.5 * px }, maxH)
         .pageEnd();
     }
@@ -316,6 +349,8 @@ export class SampleCatalog {
     const stream: JsonObject[] = [];
     let prevBig: string | null = null,
       prevSmall: string | null = null,
+      prevBigCode: string | null = null,
+      prevSmallCode: string | null = null,
       bigCount = 0,
       smallCount = 0;
     const subtotal = (kind: string, n: string, count: number) =>
@@ -327,30 +362,36 @@ export class SampleCatalog {
         kind,
       });
     for (const r of rows) {
-      const bn = big.get(String(r["大分類コード"])) ?? "",
-        sn = small.get(r["大分類コード"] + ":" + r["小分類コード"]) ?? "";
-      if (prevSmall !== null && prevSmall !== sn) {
-        subtotal("small", prevSmall, smallCount);
+      const bigCode = String(r["大分類コード"]),
+        smallCode = String(r["小分類コード"]),
+        bn = big.get(bigCode) ?? "",
+        sn = small.get(bigCode + ":" + smallCode) ?? "",
+        bigChanged = prevBigCode !== bigCode,
+        smallChanged = bigChanged || prevSmallCode !== smallCode;
+      if (prevSmallCode !== null && smallChanged) {
+        subtotal("small", prevSmall ?? "", smallCount);
         smallCount = 0;
       }
-      if (prevBig !== null && prevBig !== bn) {
-        subtotal("big", prevBig, bigCount);
+      if (prevBigCode !== null && bigChanged) {
+        subtotal("big", prevBig ?? "", bigCount);
         bigCount = 0;
       }
       stream.push({
-        大分類: prevBig !== bn ? bn : "",
-        小分類: prevSmall !== sn ? sn : "",
+        大分類: bigChanged ? bn : "",
+        小分類: smallChanged ? sn : "",
         品番: r["品番"],
         品名: r["品名"],
         kind: "detail",
       });
       prevBig = bn;
       prevSmall = sn;
+      prevBigCode = bigCode;
+      prevSmallCode = smallCode;
       bigCount++;
       smallCount++;
     }
-    if (prevSmall !== null) subtotal("small", prevSmall, smallCount);
-    if (prevBig !== null) subtotal("big", prevBig, bigCount);
+    if (prevSmall !== null) subtotal("small", prevSmall ?? "", smallCount);
+    if (prevBig !== null) subtotal("big", prevBig ?? "", bigCount);
     const p = new PrintData().setDefinition(d);
     for (let offset = 0; offset < stream.length; offset += 20) {
       p.pageStart();
@@ -358,7 +399,7 @@ export class SampleCatalog {
         for (const n of ["大分類", "小分類", "品番", "品名"])
           p.setValue(n, r[n], i);
         for (const n of ["枠_大分類", "枠_小分類", "枠_品番", "枠_品名"]) {
-          p.setValue(n, "", i);
+          p.drawObject(n, i); // 枠（四角形）。"" を書くと描かない（D-33）
           if (r.kind !== "detail")
             p.changeAttributes(
               n,
