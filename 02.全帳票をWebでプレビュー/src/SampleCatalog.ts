@@ -148,7 +148,7 @@ export class SampleCatalog {
           .setValue("市区町村", v[1] ?? "", i)
           .setValue("住所", v[2] ?? "", i)
           .drawObject("横罫線", i);
-        if (page >= 5 && i % 2 === 1) p.drawObject("網掛け", i);
+        if (page >= 5 && i % 2 === 1) p.drawObject("網掛け", Math.floor(i / 2));
       });
       if (page < 5) {
         const v = Object.values(chunk[0]);
