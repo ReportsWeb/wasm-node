@@ -18,7 +18,7 @@ viewer.addEventListener('load',async()=>{
     if(!response.ok)throw new Error(`印刷データの取得に失敗しました（HTTP ${response.status}）`);
     printData=await response.json();
     await reports.setPrintData(printData);
-    status.textContent='1ページを表示しました';pdf.disabled=false;
+    status.textContent=`${reports.getState().pageCount}ページを表示しました`;pdf.disabled=false;
   }catch(error){status.textContent=`表示できませんでした：${error.message}。READMEの「困ったとき」を確認し、再読み込みしてください。`;}
 });
 pdf.addEventListener('click',async()=>{

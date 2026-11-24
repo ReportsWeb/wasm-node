@@ -1,6 +1,6 @@
 # 01.あっという間に帳票出力 — Node.js
 
-> このサンプルは npm パッケージ [`@pao-at-office/reports-web`](https://www.npmjs.com/package/@pao-at-office/reports-web) と、帳票エンジンの Docker イメージ [`ghcr.io/reportsweb/engine`](https://github.com/ReportsWeb/engine) を使っています。
+Reports Web 1.3.0
 
 Node.jsで1ページの印刷データを作り、ブラウザーで表示・PDF保存する、最初のサンプルです。短いNode.jsコードの文字を変えて、帳票に反映されるところから始めます。
 
@@ -12,6 +12,16 @@ Node.jsで1ページの印刷データを作り、ブラウザーで表示・PDF
 
 この操作はブラウザー内の体験用です。プログラムが設定した文字も編集できるよう、現在の値をデザインへ入れて開きます。元の帳票ファイルやプログラムは上書きしません。ページを再読み込みすると元のサンプルに戻ります。編集結果を残す場合は、戻る前にデザイナーの保存機能で `.prepdj` を保存してください。ソースの値を変える練習とは別の操作です。
 
+## Dockerを使わずに、すぐ試す
+
+Node.jsがあれば、Dockerなしで動きます。このフォルダーで次の1行を実行すると、ブラウザーに帳票が出ます。
+
+```sh
+npm start
+```
+
+ブラウザーが開かないときは http://127.0.0.1:19220/ を開きます。このあとの節は、Dockerで起動する方法です。
+
 ## 1. 用意するもの
 
 - **Windows／macOS**：Docker Desktopをインストールして起動してください。WindowsではLinuxコンテナーを使用します。macOSでは、お使いのMac（Apple Silicon／Intel）に合うインストーラーを選びます。
@@ -19,7 +29,7 @@ Node.jsで1ページの印刷データを作り、ブラウザーで表示・PDF
 - ターミナルで `docker version` と `docker compose version` が実行できる状態にしてください。以下のDockerコマンドは3 OS共通です。[Docker公式の導入案内](https://docs.docker.com/compose/install/)
 - 初回はDockerが必要なソフトウェアを取得するため、インターネット接続が必要です。
 - Node.jsをパソコンへ別途インストールする必要はありません。
-- このリポジトリを `git clone` して、番号フォルダーでコマンドを実行します。帳票エンジンは Docker イメージ `ghcr.io/reportsweb/engine:1.1.0` として自動で取得されます。
+- このリポジトリを `git clone` して、番号フォルダーでコマンドを実行します。帳票エンジンは Docker イメージ `ghcr.io/reportsweb/engine:1.3.0` として自動で取得されます。
 
 ## 2. 開発環境で開いて起動する
 
@@ -45,7 +55,7 @@ quick-startとengineが `Up`（起動中）になっていることを確認し�
 
 このURLは、お使いのパソコン内で今起動したサーバーの入口です。公開デモサイトではないため、起動前にURLだけ開いても動きません。ポートを外部へ開放する設定も不要です。
 
-同じフォルダーの `.\Start.ps1`（Windows）／`sh start.sh`（macOS・Linux）でも、上と同じDockerコマンドを実行できます。
+同梱の `.\Start.ps1`（Windows）／`sh start.sh`（macOS・Linux）でも、上と同じDockerコマンドを実行できます。
 
 ## 3. 画面で確かめる
 
@@ -147,12 +157,12 @@ docker compose up -d --wait --wait-timeout 180
 
 - **dockerが見つからない／接続できない**：Docker Desktop、またはLinuxのDockerサービスが起動しているか確認し、新しいターミナルで `docker version` を実行します。Linuxで権限エラーになる場合は、Dockerの導入手順に従って実行ユーザーの権限も確認してください。
 - **ポートが使用中**：`docker ps` で、すでに同じサンプルが起動していないか確認します。別環境が使っている場合は、このフォルダーに `.env` を作り、例えば `SAMPLE_PORT=19300` と書いて再度起動します。その場合のURLもその番号になります。
-- **エンジンのイメージを取得できない**：インターネットに接続した状態で `docker pull ghcr.io/reportsweb/engine:1.1.0` が成功するか確認します。
+- **エンジンのイメージを取得できない**：インターネットに接続した状態で `docker pull ghcr.io/reportsweb/engine:1.3.0` が成功するか確認します。
 - **画面が開かない／帳票が出ない**：`docker compose ps` と `docker compose logs --tail=50` を確認します。起動に失敗したままURLだけ開き直しても直りません。
 - **Node.jsの処理を追いたい**：`docker compose logs -f quick-start`でログを見られます。Ctrl+Cはログ表示を終了するだけで、サーバーは停止しません。
 
 ## 共通のファイルについて
 
-帳票エンジンとブラウザー用のランタイム（デザイナー・プレビュー画面）は、Docker イメージ `ghcr.io/reportsweb/engine:1.1.0` から取得します。この01ではDBを使いません。
+帳票エンジンとブラウザー用のランタイム（デザイナー・プレビュー画面）は、Docker イメージ `ghcr.io/reportsweb/engine:1.3.0` から取得します。この01ではDBを使いません。
 
 **起動するコンテナーはサンプルごとに独立しています。** 01専用のエンジンを起動します。共通のファイルを読むことと、同じ起動中のサーバーを使うことは別です。

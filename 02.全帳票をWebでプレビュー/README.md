@@ -1,6 +1,6 @@
 # 02.全帳票をWebでプレビュー — Node.js / TypeScript
 
-> このサンプルは npm パッケージ [`@pao-at-office/reports-web`](https://www.npmjs.com/package/@pao-at-office/reports-web) と、帳票エンジンの Docker イメージ [`ghcr.io/reportsweb/engine`](https://github.com/ReportsWeb/engine) を使っています。
+Reports Web 1.3.0
 
 請求書、見積書、郵便番号一覧などを、Node.js / TypeScriptでデータベースから読み出して帳票にするWebアプリです。帳票の切替、明細の繰り返し、複数ページ、画像、PDFをまとめて学べます。01を起動しておく必要はありません。
 
@@ -11,7 +11,7 @@
 - ターミナルで `docker version` と `docker compose version` が実行できる状態にしてください。以下のDockerコマンドは3 OS共通です。[Docker公式の導入案内](https://docs.docker.com/compose/install/)
 - 初回はDockerが必要なソフトウェアを取得するため、インターネット接続が必要です。
 - Node.js、TypeScriptやPostgreSQLをパソコンへ別途インストールする必要はありません。
-- このリポジトリを `git clone` して、番号フォルダーでコマンドを実行します。帳票エンジンは Docker イメージ `ghcr.io/reportsweb/engine:1.1.0` として自動で取得されます。
+- このリポジトリを `git clone` して、番号フォルダーでコマンドを実行します。帳票エンジンは Docker イメージ `ghcr.io/reportsweb/engine:1.3.0` として自動で取得されます。
 
 ## 2. 開発環境で開いて起動する
 
@@ -37,7 +37,7 @@ node、database、engineが `Up`（起動中）になっていることを確認
 
 このURLは、お使いのパソコン内で今起動したサーバーの入口です。公開デモサイトではないため、起動前にURLだけ開いても動きません。ポートを外部へ開放する設定も不要です。
 
-同じフォルダーの `.\Start.ps1`（Windows）／`sh start.sh`（macOS・Linux）でも、上と同じDockerコマンドを実行できます。
+同梱の `.\Start.ps1`（Windows）／`sh start.sh`（macOS・Linux）でも、上と同じDockerコマンドを実行できます。
 
 ## 3. 画面で確かめる
 
@@ -73,7 +73,7 @@ TypeScriptはDockerイメージのビルド時にJavaScriptへコンパイルさ
 |場所|役割|
 |---|---|
 |`src/SampleCatalog.ts`|帳票を作る中心部分。`invoice()`は請求書、`estimate()`は見積書、`rows()`はSQLによるデータ取得|
-|`@pao-at-office/reports-web`（npm）|値、明細、ページを印刷データへまとめる`PrintData`と、エンジンへ送る`ReportsWebEngine`|
+|`src/PrintData.ts`|値、明細、ページを印刷データへまとめるNode.js / TypeScriptクラス|
 |`src/server.ts`|HTTP要求を受け、印刷データ・PDFを返す入口|
 |`resources/definitions/`|帳票ごとのデザイン（PREPDJ）|
 |`resources/images/`|角印などの画像|
@@ -81,7 +81,7 @@ TypeScriptはDockerイメージのビルド時にJavaScriptへコンパイルさ
 |`compose.yaml`|このサンプルで起動するサービスと接続先|
 |`Dockerfile`|Node.js / TypeScriptの実行環境の作り方|
 
-まず`SampleCatalog.ts`の`invoice()`を読み、分からない呼び出しはパッケージの[README](https://www.npmjs.com/package/@pao-at-office/reports-web)で調べてください。データ取得を調べる場合は`rows()`を読みます。
+まず`SampleCatalog.ts`の`invoice()`を読み、分からない呼び出しを`PrintData.ts`で調べてください。データ取得を調べる場合は`rows()`を読みます。
 
 デザインは`resources/definitions/invoice.prepdj`をReports Webデザイナーで開いて編集できます。保存先をこのファイルに戻し、第4節のDockerコマンドで再ビルドしてから帳票をもう一度読み込みます。請求書はNode.js / TypeScript側でも明細の色や幅を指定しているため、それらの変更は`invoice()`も確認してください。
 
@@ -147,12 +147,12 @@ docker compose up -d --wait --wait-timeout 180
 
 - **dockerが見つからない／接続できない**：Docker Desktop、またはLinuxのDockerサービスが起動しているか確認し、新しいターミナルで `docker version` を実行します。Linuxで権限エラーになる場合は、Dockerの導入手順に従って実行ユーザーの権限も確認してください。
 - **ポートが使用中**：`docker ps` で、すでに同じサンプルが起動していないか確認します。別環境が使っている場合は、このフォルダーに `.env` を作り、例えば `SAMPLE_PORT=19301` と書いて再度起動します。その場合のURLもその番号になります。
-- **エンジンのイメージを取得できない**：インターネットに接続した状態で `docker pull ghcr.io/reportsweb/engine:1.1.0` が成功するか確認します。
+- **エンジンのイメージを取得できない**：インターネットに接続した状態で `docker pull ghcr.io/reportsweb/engine:1.3.0` が成功するか確認します。
 - **画面が開かない／帳票が出ない**：`docker compose ps` と `docker compose logs --tail=50` を確認します。起動に失敗したままURLだけ開き直しても直りません。
 - **Node.js / TypeScriptの処理を追いたい**：`docker compose logs -f node`でログを見られます。Ctrl+Cはログ表示を終了するだけで、サーバーは停止しません。
 
 ## 共通のファイルについて
 
-帳票エンジンとブラウザー用のランタイム（デザイナー・プレビュー画面）は、Docker イメージ `ghcr.io/reportsweb/engine:1.1.0` から取得します。DBの初期化SQLは`../common/database/`に一度だけ入っています。郵便番号などのデータもSQL内に収録され、起動時に自動で登録されます。
+帳票エンジンとブラウザー用のランタイム（デザイナー・プレビュー画面）は、Docker イメージ `ghcr.io/reportsweb/engine:1.3.0` から取得します。DBの初期化SQLは`../common/database/`に一度だけ入っています。郵便番号などのデータもSQL内に収録され、起動時に自動で登録されます。
 
 **起動するコンテナーはサンプルごとに独立しています。** DBもこのサンプル専用に作るので、このサンプルを止めたり変更したりしても他のサンプルへ影響しません。共通のファイルを読むことと、同じ起動中のサーバーを使うことは別です。

@@ -2,7 +2,7 @@ name: reports-web-node-02
 services:
   engine:
     restart: unless-stopped
-    image: ghcr.io/reportsweb/engine:1.1.0
+    image: ghcr.io/reportsweb/engine:1.3.0
     healthcheck:
       test:
       - CMD
@@ -12,6 +12,10 @@ services:
       interval: 2s
       timeout: 3s
       retries: 40
+    command:
+    - node
+    - --max-old-space-size=1024
+    - server.mjs
   database:
     image: postgres:17-alpine
     environment:
@@ -83,7 +87,7 @@ services:
       timeout: 4s
       retries: 60
   runtime:
-    image: ghcr.io/reportsweb/engine:1.1.0
+    image: ghcr.io/reportsweb/engine:1.3.0
     user: root
     command:
     - export-runtime

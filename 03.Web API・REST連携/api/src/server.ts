@@ -13,6 +13,18 @@ import { ReportsWebEngine, ReportsWebEngineError, type JsonObject } from "@pao-a
 export const BASE = "/demo/reports.web/samples/node";
 const MAX = 64 * 1024 * 1024;
 const HERE = fileURLToPath(new URL("..", import.meta.url));
+// エンジン停止は502、時間切れは504。例外の文字列は利用者へ返さない。
+function engineFailure(error: unknown): never {
+  const timeout =
+    error instanceof Error &&
+    (error.name === "TimeoutError" || error.name === "AbortError");
+  throw new HttpError(
+    timeout ? 504 : 502,
+    timeout
+      ? "PDF作成エンジンが時間内に応答しませんでした。"
+      : "PDF作成エンジンに接続できませんでした。",
+  );
+}
 export class HttpError extends Error {
   constructor(
     public status: number,
@@ -73,7 +85,9 @@ export async function inlineAssets(
         k === "ImagePath" &&
         typeof result[k] === "string" &&
         result[k] &&
-        !result[k].startsWith("data:")
+        !result[k].startsWith("data:") &&
+        // OP-IMGSRC：http・https の URL はそのままエンジンへ渡す（読むかどうかはエンジンの PAO_REPORTS_IMAGE_URL_HOSTS が決める）。
+        !/^https?:\/\//i.test(result[k])
       )
         throw new HttpError(400, "登録済みの画像を指定してください。");
     }
@@ -201,7 +215,7 @@ export function createApplication(c: Config, catalog: SampleCatalog) {
             const data = await inlineAssets(body, c),
               payload = JSON.stringify(data);
             if (Buffer.byteLength(payload) > MAX)
-              throw new HttpError(413, "展開後の印刷データが32MiBを超えます。");
+              throw new HttpError(413, "展開後の印刷データが64MiBを超えます。");
             let pdf: Buffer;
             try {
               // @pao-at-office/reports-web: POST /render/pdf to the Reports.Web engine.
