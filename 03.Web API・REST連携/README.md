@@ -37,7 +37,7 @@ client、api、database、engineが `Up`（起動中）になっていること�
 
 このURLは、お使いのパソコン内で今起動したサーバーの入口です。公開デモサイトではないため、起動前にURLだけ開いても動きません。ポートを外部へ開放する設定も不要です。
 
-同梱の `.\Start.ps1`（Windows）／`sh start.sh`（macOS・Linux）でも、上と同じDockerコマンドを実行できます。
+同じフォルダーの `.\Start.ps1`（Windows）／`sh start.sh`（macOS・Linux）でも、上と同じDockerコマンドを実行できます。
 
 ## 3. 画面で確かめる
 
@@ -74,7 +74,7 @@ TypeScriptはDockerイメージのビルド時にJavaScriptへコンパイルさ
 |場所|役割|
 |---|---|
 |`api/src/SampleCatalog.ts`|帳票を作る中心部分。`invoice()`は請求書、`estimate()`は見積書、`rows()`はSQLによるデータ取得|
-|`api/src/PrintData.ts`|値、明細、ページを印刷データへまとめるNode.js / TypeScriptクラス|
+|npm パッケージ [`@pao-at-office/reports-web`](https://www.npmjs.com/package/@pao-at-office/reports-web) の `PrintData`|値、明細、ページを印刷データへまとめるNode.js / TypeScriptクラス|
 |`api/src/server.ts`|HTTP要求を受け、印刷データ・PDFを返す入口|
 |`api/resources/definitions/`|帳票ごとのデザイン（PREPDJ）|
 |`api/resources/images/`|角印などの画像|
@@ -124,7 +124,7 @@ docker compose down --volumes
 
 このサンプルのコンテナーとネットワーク、試用中のDBデータを削除します。編集したNode.js / TypeScriptや帳票定義は消えません。別の01・02・03は停止しません。次に起動すると同じ初期データが自動で入ります。DBを残して一時停止するだけなら`docker compose stop`を使います。
 
-同梱の `.\Stop.ps1`／`sh stop.sh`でも同じ操作ができます。
+同じフォルダーの `.\Stop.ps1`／`sh stop.sh`でも同じ操作ができます。
 
 ### サンプル用イメージも削除して、最初から試す
 
