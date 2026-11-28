@@ -29,6 +29,8 @@
 
 迷ったら 01 から順にどうぞ。各フォルダーは独立していて、別々に起動・停止できます。
 
+Apple シリコンでもそのまま動く Docker イメージ（`ghcr.io/reportsweb/engine:1.3.1`）を使います。
+
 ## クイックスタート
 
 必要なのは Docker（Docker Desktop など）だけです。Node.js や PostgreSQL をパソコンに入れる必要はありません。
